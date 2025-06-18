@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Minecraft Skin zu Totem Generator (Web)</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <style>
+        body { background: #222; color: #fff; font-family: Arial; }
+        .container { max-width: 600px; margin: 40px auto; background: #333; padding: 20px; border-radius: 8px; }
+        input, button { margin: 10px 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Minecraft Skin zu Totem Generator</h1>
+    <form id="uploadForm">
+        <input type="file" name="skin" accept="image/png" required>
+        <label style="display:block;margin:10px 0;">
+            <input type="checkbox" name="overlay" id="overlay" checked>
+            Kopf-Overlay anzeigen
+        </label>
+        <button type="submit">Totem generieren</button>
+    </form>
+    <div id="preview"></div>
+</div>
+<script>
+let lastBlobUrl = null;
+let lastBlob = null;
+
+document.getElementById('uploadForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const response = await fetch('/generate_totem', { method: 'POST', body: formData });
+    if (response.ok) {
+        if (lastBlobUrl) URL.revokeObjectURL(lastBlobUrl); // Speicher aufräumen
+        lastBlob = await response.blob();
+        lastBlobUrl = URL.createObjectURL(lastBlob);
+        document.getElementById('preview').innerHTML = `
+            <h2>Vorschau:</h2>
+            <img src="${lastBlobUrl}" style="image-rendering: pixelated; width: 160px; height: 160px;">
+            <br>
+            <button id="downloadBtn">Totem herunterladen</button>
+            <button id="javaZipBtn" style="margin-left:10px;">Custom_Totem.zip (Java) herunterladen</button>
+        `;
+        document.getElementById('downloadBtn').onclick = function() {
+            const a = document.createElement('a');
+            a.href = lastBlobUrl;
+            a.download = 'totem_of_undying.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        };
+        document.getElementById('javaZipBtn').onclick = async function() {
+            const formData = new FormData(document.getElementById('uploadForm'));
+            const response = await fetch('/generate_java_zip', { method: 'POST', body: formData });
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Custom_Totem.zip';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            } else {
+                alert('Fehler beim Erstellen des Java-Resourcepacks!');
+            }
+        };
+    } else {
+        alert('Fehler beim Generieren!');
+    }
+};
+</script>
+</body>
+</html> 

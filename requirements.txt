@@ -1,0 +1,9 @@
+# Abhängigkeiten für den Minecraft Skin zu Totem Generator
+# ======================================================
+
+# Pillow für Bildverarbeitung
+Pillow>=10.0.0
+
+# tkinter ist normalerweise bereits in Python enthalten
+# Falls nicht, installieren Sie Python mit tkinter Support 
+Flask 
