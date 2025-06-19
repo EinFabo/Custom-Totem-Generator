@@ -14,7 +14,10 @@
 <div class="container">
     <h1>Minecraft Skin zu Totem Generator</h1>
     <form id="uploadForm">
-        <input type="file" name="skin" accept="image/png" required>
+        <label for="username">Minecraft Username (optional):</label>
+        <input type="text" id="username" name="username" placeholder="z.B. Notch">
+        <br>
+        <input type="file" name="skin" id="skin" accept="image/png">
         <label style="display:block;margin:10px 0;">
             <input type="checkbox" name="overlay" id="overlay" checked>
             Kopf-Overlay anzeigen
@@ -71,6 +74,23 @@ document.getElementById('uploadForm').onsubmit = async function(e) {
         alert('Fehler beim Generieren!');
     }
 };
+
+const usernameInput = document.getElementById('username');
+const skinInput = document.getElementById('skin');
+usernameInput.addEventListener('input', function() {
+    skinInput.disabled = !!usernameInput.value;
+    if (usernameInput.value) {
+        skinInput.value = null;
+    }
+});
+skinInput.addEventListener('change', function() {
+    usernameInput.disabled = skinInput.files.length > 0;
+    if (skinInput.files.length > 0) {
+        usernameInput.value = '';
+    } else {
+        usernameInput.disabled = false;
+    }
+});
 </script>
 </body>
 </html> 

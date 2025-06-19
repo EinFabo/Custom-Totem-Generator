@@ -5,6 +5,7 @@ from pathlib import Path
 import zipfile
 import json
 import uuid
+import requests
 
 app = Flask(__name__)
 
@@ -15,9 +16,31 @@ def index():
 
 @app.route('/generate_totem', methods=['POST'])
 def generate_totem():
-    # Bild aus dem Request holen
-    file = request.files['skin']
-    uploaded_image = Image.open(file.stream)
+    # Prüfe, ob ein Username übergeben wurde
+    username = request.form.get('username', '').strip()
+    if username:
+        # Schritt 1: UUID von Mojang API abfragen
+        mojang_url = f"https://api.mojang.com/users/profiles/minecraft/{username}"
+        mojang_response = requests.get(mojang_url)
+        if mojang_response.status_code == 200:
+            # UUID erfolgreich erhalten
+            uuid = mojang_response.json()['id']
+            # Schritt 2: Skin von Crafatar mit UUID laden
+            skin_url = f"https://crafatar.com/skins/{uuid}"
+            response = requests.get(skin_url)
+            if response.status_code == 200:
+                # Skin erfolgreich geladen, öffne das Bild
+                uploaded_image = Image.open(io.BytesIO(response.content))
+            else:
+                # Fehler: Skin konnte nicht von Crafatar geladen werden
+                return "Skin konnte nicht von Crafatar geladen werden.", 400
+        else:
+            # Fehler: Username existiert nicht laut Mojang API
+            return "Username existiert nicht (laut Mojang API).", 400
+    else:
+        # Wenn kein Username angegeben wurde, verwende das hochgeladene Bild
+        file = request.files['skin']
+        uploaded_image = Image.open(file.stream)
 
     # --- Bildverarbeitung: Totem generieren (aus deiner bisherigen Logik) ---
     # Mapping-Parameter für Kopf, Arme und Körper
