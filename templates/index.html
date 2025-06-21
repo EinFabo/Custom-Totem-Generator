@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-adsense-account" content="ca-pub-7497420880516543">
-    <title>Minecraft Skin zu Totem Generator (Web)</title>
+    <title>Minecraft Skin to Totem Generator (Web)</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <!-- Google Fonts für Minecraft-ähnliche Typografie -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -441,7 +441,7 @@
         }
 
         .form-group.disabled::after {
-            content: '🔒 Deaktiviert';
+            content: '🔒 Disabled';
             position: absolute;
             top: -10px;
             right: 0;
@@ -482,22 +482,22 @@
 <div class="container">
     <div class="main-card">
         <div class="header">
-            <h1>Minecraft Skin zu Totem Generator</h1>
+            <h1>Minecraft Skin to Totem Generator</h1>
         </div>
         
         <form id="uploadForm">
             <div class="form-section">
                 <div class="form-group">
                     <label for="username">Minecraft Username:</label>
-                    <input type="text" id="username" name="username" class="minecraft-input" placeholder="z.B. Notch">
+                    <input type="text" id="username" name="username" class="minecraft-input" placeholder="e.g. Notch">
                     <div id="usernameError" class="error-message" style="display:none;"></div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="skin">Oder Skin-Datei hochladen:</label>
+                    <label for="skin">Or upload skin file:</label>
                     <div class="file-input-wrapper">
                         <input type="file" name="skin" id="skin" accept="image/png">
-                        <label for="skin" class="file-input-label">📁 Skin-Datei auswählen (64x64 PNG)</label>
+                        <label for="skin" class="file-input-label">📁 Select skin file (64x64 PNG)</label>
                         <button type="button" id="removeSkinBtn" class="file-remove-btn" style="display:none;">×</button>
                     </div>
                     <div id="skinError" class="error-message" style="display:none;"></div>
@@ -505,16 +505,16 @@
                 
                 <div class="checkbox-group">
                     <input type="checkbox" name="overlay" id="overlay" checked>
-                    <label for="overlay">Kopf-Overlay anzeigen</label>
+                    <label for="overlay">Show head overlay</label>
                 </div>
                 
-                <button type="submit" class="minecraft-button">⚡ Totem generieren</button>
+                <button type="submit" class="minecraft-button">⚡ Generate Totem</button>
             </div>
         </form>
         
         <div id="loader" class="loader" style="display:none;">
             <div class="loader-spinner"></div>
-            <div class="loader-text">Skin wird gesucht/generiert ...</div>
+            <div class="loader-text">Searching/generating skin...</div>
         </div>
         
         <div id="preview"></div>
@@ -533,15 +533,15 @@ document.getElementById('uploadForm').onsubmit = async function(e) {
     try {
         const response = await fetch('/generate_totem', { method: 'POST', body: formData });
         if (response.ok) {
-            if (lastBlobUrl) URL.revokeObjectURL(lastBlobUrl); // Speicher aufräumen
+            if (lastBlobUrl) URL.revokeObjectURL(lastBlobUrl); // Clean up memory
             lastBlob = await response.blob();
             lastBlobUrl = URL.createObjectURL(lastBlob);
             document.getElementById('preview').innerHTML = `
                 <div class="preview-section">
-                    <h2>Vorschau:</h2>
+                    <h2>Preview:</h2>
                     <img src="${lastBlobUrl}" class="preview-image">
                     <div class="button-group">
-                        <button id="downloadBtn" class="minecraft-button">📥 Totem herunterladen</button>
+                        <button id="downloadBtn" class="minecraft-button">📥 Download Totem</button>
                         <button id="javaZipBtn" class="minecraft-button secondary">📦 Custom_Totem.zip (Java)</button>
                     </div>
                 </div>
@@ -568,21 +568,21 @@ document.getElementById('uploadForm').onsubmit = async function(e) {
                     document.body.removeChild(a);
                     setTimeout(() => URL.revokeObjectURL(url), 1000);
                 } else {
-                    alert('Fehler beim Erstellen des Java-Resourcepacks!');
+                    alert('Error creating Java resource pack!');
                 }
             };
         } else {
             const text = await response.text();
             if (text.includes('Username existiert nicht')) {
                 const errorDiv = document.getElementById('usernameError');
-                errorDiv.textContent = 'Name existiert nicht!';
+                errorDiv.textContent = 'Username does not exist!';
                 errorDiv.style.display = 'block';
             } else {
-                alert('Fehler beim Generieren: ' + text);
+                alert('Error generating: ' + text);
             }
         }
     } catch (err) {
-        alert('Netzwerk- oder Serverfehler!');
+        alert('Network or server error!');
     } finally {
         document.getElementById('loader').style.display = 'none';
     }
@@ -594,7 +594,7 @@ const usernameGroup = usernameInput.parentElement;
 const skinGroup = skinInput.parentElement.parentElement;
 const removeSkinBtn = document.getElementById('removeSkinBtn');
 
-// X-Button Funktionalität
+// X-Button functionality
 removeSkinBtn.addEventListener('click', function() {
     skinInput.value = '';
     usernameInput.disabled = false;
@@ -603,10 +603,10 @@ removeSkinBtn.addEventListener('click', function() {
     document.getElementById('skinError').style.display = 'none';
     removeSkinBtn.style.display = 'none';
     
-    // File input label aktivieren
+    // Enable file input label
     const fileLabel = document.querySelector('.file-input-label');
     fileLabel.classList.remove('disabled');
-    fileLabel.textContent = '📁 Skin-Datei auswählen (64x64 PNG)';
+    fileLabel.textContent = '📁 Select skin file (64x64 PNG)';
 });
 
 usernameInput.addEventListener('input', function() {
@@ -617,14 +617,14 @@ usernameInput.addEventListener('input', function() {
         skinInput.value = null;
         skinGroup.classList.add('disabled');
         usernameGroup.classList.remove('disabled');
-        // File input label auch deaktivieren
+        // Disable file input label
         const fileLabel = document.querySelector('.file-input-label');
         fileLabel.classList.add('disabled');
         removeSkinBtn.style.display = 'none';
     } else {
         skinGroup.classList.remove('disabled');
         usernameGroup.classList.remove('disabled');
-        // File input label aktivieren
+        // Enable file input label
         const fileLabel = document.querySelector('.file-input-label');
         fileLabel.classList.remove('disabled');
     }
@@ -641,19 +641,19 @@ skinInput.addEventListener('change', function() {
         usernameGroup.classList.add('disabled');
         skinGroup.classList.remove('disabled');
         
-        // X-Button anzeigen und Dateinamen anzeigen
+        // Show X-button and display filename
         removeSkinBtn.style.display = 'flex';
         const fileName = skinInput.files[0].name;
         const fileLabel = document.querySelector('.file-input-label');
         fileLabel.textContent = `📁 ${fileName}`;
         
-        // Bildgröße prüfen
+        // Check image size
         const file = skinInput.files[0];
         const img = new Image();
         img.onload = function() {
             if (img.width !== 64 || img.height !== 64) {
                 const errorDiv = document.getElementById('skinError');
-                errorDiv.textContent = 'Skin-Datei muss 64x64 Pixel groß sein!';
+                errorDiv.textContent = 'Skin file must be 64x64 pixels!';
                 errorDiv.style.display = 'block';
             } else {
                 document.getElementById('skinError').style.display = 'none';
@@ -661,7 +661,7 @@ skinInput.addEventListener('change', function() {
         };
         img.onerror = function() {
             const errorDiv = document.getElementById('skinError');
-            errorDiv.textContent = 'Fehler beim Laden der Bilddatei!';
+            errorDiv.textContent = 'Error loading image file!';
             errorDiv.style.display = 'block';
         };
         img.src = URL.createObjectURL(file);
@@ -672,9 +672,9 @@ skinInput.addEventListener('change', function() {
         document.getElementById('skinError').style.display = 'none';
         removeSkinBtn.style.display = 'none';
         
-        // File input label zurücksetzen
+        // Reset file input label
         const fileLabel = document.querySelector('.file-input-label');
-        fileLabel.textContent = '📁 Skin-Datei auswählen (64x64 PNG)';
+        fileLabel.textContent = '📁 Select skin file (64x64 PNG)';
     }
 });
 </script>
