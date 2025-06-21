@@ -2,45 +2,524 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minecraft Skin zu Totem Generator (Web)</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <!-- Google Fonts für Minecraft-ähnliche Typografie -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Google AdSense: Lädt das Werbeskript für alle Anzeigen auf der Seite -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7497420880516543"
          crossorigin="anonymous"></script>
     <style>
-        body { background: #222; color: #fff; font-family: Arial; }
-        .container { max-width: 600px; margin: 40px auto; background: #333; padding: 20px; border-radius: 8px; }
-        input, button { margin: 10px 0; }
+        /* Minecraft-Themed CSS mit modernem Design */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #3d2b1f 0%, #2d1a0f 50%, #1a1a1a 100%);
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Minecraft-Pixelart Hintergrundmuster */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                radial-gradient(circle at 75% 75%, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        /* Hauptkarte mit Minecraft-Design */
+        .main-card {
+            background: linear-gradient(145deg, #4a4a4a, #3d2b1f);
+            border: 3px solid #2d1a0f;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 
+                0 8px 32px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Minecraft-Style Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.8rem;
+            color: #ffd700;
+            text-shadow: 
+                2px 2px 0 #8b4513,
+                4px 4px 0 #654321;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .header::after {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            margin-top: 15px;
+        }
+
+        /* Formular-Styling */
+        .form-section {
+            background: rgba(0,0,0,0.2);
+            border: 2px solid #5a5a5a;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: #ffd700;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        /* Minecraft-Style Input-Felder */
+        .minecraft-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: #3d2b1f;
+            border: 2px solid #5a5a5a;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .minecraft-input:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            background: #4a4a4a;
+        }
+
+        .minecraft-input::placeholder {
+            color: #a0a0a0;
+        }
+
+        /* File Input Styling */
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 12px 15px;
+            background: #5a5a5a;
+            border: 2px solid #6a6a6a;
+            border-radius: 6px;
+            color: #ffffff;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .file-input-label:hover {
+            background: #6a6a6a;
+            border-color: #7a7a7a;
+        }
+
+        /* X-Button für Datei-Entfernung */
+        .file-remove-btn {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            background: #8b4513;
+            border: 2px solid #654321;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            color: #ffffff;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .file-remove-btn:hover {
+            background: #a0522d;
+            border-color: #8b4513;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Checkbox Styling */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #ffd700;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            color: #ffffff;
+        }
+
+        /* Minecraft-Style Buttons */
+        .minecraft-button {
+            background: linear-gradient(145deg, #5a5a5a, #4a4a4a);
+            border: 2px solid #3d2b1f;
+            border-radius: 6px;
+            color: #ffffff;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Roboto', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .minecraft-button:hover {
+            background: linear-gradient(145deg, #6a6a6a, #5a5a5a);
+            border-color: #4a4a4a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .minecraft-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .minecraft-button.secondary {
+            background: linear-gradient(145deg, #8b4513, #654321);
+            border-color: #5a2d2d;
+        }
+
+        .minecraft-button.secondary:hover {
+            background: linear-gradient(145deg, #a0522d, #8b4513);
+            border-color: #654321;
+        }
+
+        /* Error Styling */
+        .error-icon {
+            color: #ff6b6b;
+            font-size: 1.5em;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .error-text {
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: block;
+        }
+
+        /* Verbesserte Fehlermeldungen mit Minecraft-Style */
+        .error-message {
+            background: linear-gradient(145deg, #8b4513, #654321);
+            border: 2px solid #5a2d2d;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-top: 8px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .error-message::before {
+            content: '⚠️';
+            font-size: 1.2em;
+        }
+
+        .error-message::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #ff6b6b, #ff8e8e, #ff6b6b);
+        }
+
+        .error-message.success {
+            background: linear-gradient(145deg, #5a5a5a, #4a4a4a);
+            border-color: #3d2b1f;
+        }
+
+        .error-message.success::before {
+            content: '✅';
+        }
+
+        .error-message.success::after {
+            background: linear-gradient(90deg, #4caf50, #66bb6a, #4caf50);
+        }
+
+        /* Loader Styling */
+        .loader {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+        }
+
+        .loader-spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 4px solid #5a5a5a;
+            border-top: 4px solid #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loader-text {
+            margin-top: 15px;
+            color: #ffd700;
+            font-weight: 500;
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        /* Preview Section */
+        .preview-section {
+            background: rgba(0,0,0,0.3);
+            border: 2px solid #5a5a5a;
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .preview-section h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.2rem;
+        }
+
+        .preview-image {
+            image-rendering: pixelated;
+            width: 160px;
+            height: 160px;
+            border: 3px solid #5a5a5a;
+            border-radius: 8px;
+            margin: 15px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .main-card {
+                padding: 20px;
+            }
+
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .minecraft-button {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #3d2b1f;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #5a5a5a;
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6a6a6a;
+        }
+
+        /* Disabled State */
+        .minecraft-input:disabled,
+        .minecraft-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .minecraft-button:disabled:hover {
+            transform: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Verbesserte deaktivierte Zustände */
+        .form-group.disabled {
+            opacity: 0.5;
+            position: relative;
+        }
+
+        .form-group.disabled::after {
+            content: '🔒 Deaktiviert';
+            position: absolute;
+            top: -10px;
+            right: 0;
+            background: #5a5a5a;
+            color: #ffffff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid #3d2b1f;
+        }
+
+        .file-input-label.disabled {
+            background: #4a4a4a !important;
+            border-color: #3d2b1f !important;
+            color: #a0a0a0 !important;
+            cursor: not-allowed !important;
+        }
+
+        .file-input-label.disabled:hover {
+            background: #4a4a4a !important;
+            border-color: #3d2b1f !important;
+        }
+
+        .minecraft-input:disabled {
+            background: #3d2b1f !important;
+            border-color: #4a4a4a !important;
+            color: #a0a0a0 !important;
+            cursor: not-allowed;
+        }
+
+        .minecraft-input:disabled::placeholder {
+            color: #666666;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>Minecraft Skin zu Totem Generator</h1>
-    <form id="uploadForm">
-        <label for="username">Minecraft Username:</label>
-        <input type="text" id="username" name="username" placeholder="z.B. Notch">
-        <span id="usernameError" style="display:none;color:#e74c3c;font-size:1.5em;vertical-align:middle;">&#10006;</span>
-        <span id="usernameErrorText" style="display:none;color:#e74c3c;font-size:0.95em;vertical-align:middle;margin-left:5px;"></span>
-        <br>
-        <input type="file" name="skin" id="skin" accept="image/png">
-        <span id="skinError" style="display:none;color:#e74c3c;font-size:1.5em;vertical-align:middle;">&#10006;</span>
-        <span id="skinErrorText" style="display:none;color:#e74c3c;font-size:0.95em;vertical-align:middle;margin-left:5px;"></span>
-        <label style="display:block;margin:10px 0;">
-            <input type="checkbox" name="overlay" id="overlay" checked>
-            Kopf-Overlay anzeigen
-        </label>
-        <button type="submit">Totem generieren</button>
-    </form>
-    <div id="loader" style="display:none;text-align:center;margin:20px 0;">
-        <div style="display:inline-block;width:40px;height:40px;border:4px solid #888;border-top:4px solid #fff;border-radius:50%;animation:spin 1s linear infinite;"></div>
-        <div style="margin-top:8px;">Skin wird gesucht/generiert ...</div>
+    <div class="main-card">
+        <div class="header">
+            <h1>Minecraft Skin zu Totem Generator</h1>
+        </div>
+        
+        <form id="uploadForm">
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="username">Minecraft Username:</label>
+                    <input type="text" id="username" name="username" class="minecraft-input" placeholder="z.B. Notch">
+                    <div id="usernameError" class="error-message" style="display:none;"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="skin">Oder Skin-Datei hochladen:</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" name="skin" id="skin" accept="image/png">
+                        <label for="skin" class="file-input-label">📁 Skin-Datei auswählen (64x64 PNG)</label>
+                        <button type="button" id="removeSkinBtn" class="file-remove-btn" style="display:none;">×</button>
+                    </div>
+                    <div id="skinError" class="error-message" style="display:none;"></div>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" name="overlay" id="overlay" checked>
+                    <label for="overlay">Kopf-Overlay anzeigen</label>
+                </div>
+                
+                <button type="submit" class="minecraft-button">⚡ Totem generieren</button>
+            </div>
+        </form>
+        
+        <div id="loader" class="loader" style="display:none;">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">Skin wird gesucht/generiert ...</div>
+        </div>
+        
+        <div id="preview"></div>
     </div>
-    <div id="preview"></div>
 </div>
+
 <script>
 let lastBlobUrl = null;
 let lastBlob = null;
@@ -48,7 +527,6 @@ let lastBlob = null;
 document.getElementById('uploadForm').onsubmit = async function(e) {
     e.preventDefault();
     document.getElementById('usernameError').style.display = 'none';
-    document.getElementById('usernameErrorText').style.display = 'none';
     document.getElementById('loader').style.display = 'block';
     const formData = new FormData(this);
     try {
@@ -58,11 +536,14 @@ document.getElementById('uploadForm').onsubmit = async function(e) {
             lastBlob = await response.blob();
             lastBlobUrl = URL.createObjectURL(lastBlob);
             document.getElementById('preview').innerHTML = `
-                <h2>Vorschau:</h2>
-                <img src="${lastBlobUrl}" style="image-rendering: pixelated; width: 160px; height: 160px;">
-                <br>
-                <button id="downloadBtn">Totem herunterladen</button>
-                <button id="javaZipBtn" style="margin-left:10px;">Custom_Totem.zip (Java) herunterladen</button>
+                <div class="preview-section">
+                    <h2>Vorschau:</h2>
+                    <img src="${lastBlobUrl}" class="preview-image">
+                    <div class="button-group">
+                        <button id="downloadBtn" class="minecraft-button">📥 Totem herunterladen</button>
+                        <button id="javaZipBtn" class="minecraft-button secondary">📦 Custom_Totem.zip (Java)</button>
+                    </div>
+                </div>
             `;
             document.getElementById('downloadBtn').onclick = function() {
                 const a = document.createElement('a');
@@ -92,9 +573,9 @@ document.getElementById('uploadForm').onsubmit = async function(e) {
         } else {
             const text = await response.text();
             if (text.includes('Username existiert nicht')) {
-                document.getElementById('usernameError').style.display = 'inline';
-                document.getElementById('usernameErrorText').textContent = 'Name existiert nicht!';
-                document.getElementById('usernameErrorText').style.display = 'inline';
+                const errorDiv = document.getElementById('usernameError');
+                errorDiv.textContent = 'Name existiert nicht!';
+                errorDiv.style.display = 'block';
             } else {
                 alert('Fehler beim Generieren: ' + text);
             }
@@ -108,43 +589,93 @@ document.getElementById('uploadForm').onsubmit = async function(e) {
 
 const usernameInput = document.getElementById('username');
 const skinInput = document.getElementById('skin');
-usernameInput.addEventListener('input', function() {
-    skinInput.disabled = !!usernameInput.value;
-    if (usernameInput.value) {
-        skinInput.value = null;
-    }
-    document.getElementById('usernameError').style.display = 'none';
-    document.getElementById('usernameErrorText').style.display = 'none';
+const usernameGroup = usernameInput.parentElement;
+const skinGroup = skinInput.parentElement.parentElement;
+const removeSkinBtn = document.getElementById('removeSkinBtn');
+
+// X-Button Funktionalität
+removeSkinBtn.addEventListener('click', function() {
+    skinInput.value = '';
+    usernameInput.disabled = false;
+    usernameGroup.classList.remove('disabled');
+    skinGroup.classList.remove('disabled');
+    document.getElementById('skinError').style.display = 'none';
+    removeSkinBtn.style.display = 'none';
+    
+    // File input label aktivieren
+    const fileLabel = document.querySelector('.file-input-label');
+    fileLabel.classList.remove('disabled');
+    fileLabel.textContent = '📁 Skin-Datei auswählen (64x64 PNG)';
 });
+
+usernameInput.addEventListener('input', function() {
+    const hasUsername = !!usernameInput.value;
+    skinInput.disabled = hasUsername;
+    
+    if (hasUsername) {
+        skinInput.value = null;
+        skinGroup.classList.add('disabled');
+        usernameGroup.classList.remove('disabled');
+        // File input label auch deaktivieren
+        const fileLabel = document.querySelector('.file-input-label');
+        fileLabel.classList.add('disabled');
+        removeSkinBtn.style.display = 'none';
+    } else {
+        skinGroup.classList.remove('disabled');
+        usernameGroup.classList.remove('disabled');
+        // File input label aktivieren
+        const fileLabel = document.querySelector('.file-input-label');
+        fileLabel.classList.remove('disabled');
+    }
+    
+    document.getElementById('usernameError').style.display = 'none';
+});
+
 skinInput.addEventListener('change', function() {
-    usernameInput.disabled = skinInput.files.length > 0;
-    if (skinInput.files.length > 0) {
+    const hasFile = skinInput.files.length > 0;
+    usernameInput.disabled = hasFile;
+    
+    if (hasFile) {
         usernameInput.value = '';
+        usernameGroup.classList.add('disabled');
+        skinGroup.classList.remove('disabled');
+        
+        // X-Button anzeigen und Dateinamen anzeigen
+        removeSkinBtn.style.display = 'flex';
+        const fileName = skinInput.files[0].name;
+        const fileLabel = document.querySelector('.file-input-label');
+        fileLabel.textContent = `📁 ${fileName}`;
+        
         // Bildgröße prüfen
         const file = skinInput.files[0];
         const img = new Image();
         img.onload = function() {
             if (img.width !== 64 || img.height !== 64) {
-                document.getElementById('skinError').style.display = 'inline';
-                document.getElementById('skinErrorText').textContent = 'Skin-Datei muss 64x64 Pixel groß sein!';
-                document.getElementById('skinErrorText').style.display = 'inline';
+                const errorDiv = document.getElementById('skinError');
+                errorDiv.textContent = 'Skin-Datei muss 64x64 Pixel groß sein!';
+                errorDiv.style.display = 'block';
             } else {
                 document.getElementById('skinError').style.display = 'none';
-                document.getElementById('skinErrorText').style.display = 'none';
             }
         };
         img.onerror = function() {
-            document.getElementById('skinError').style.display = 'inline';
-            document.getElementById('skinErrorText').textContent = 'Fehler beim Laden der Bilddatei!';
-            document.getElementById('skinErrorText').style.display = 'inline';
+            const errorDiv = document.getElementById('skinError');
+            errorDiv.textContent = 'Fehler beim Laden der Bilddatei!';
+            errorDiv.style.display = 'block';
         };
         img.src = URL.createObjectURL(file);
     } else {
         usernameInput.disabled = false;
+        usernameGroup.classList.remove('disabled');
+        skinGroup.classList.remove('disabled');
         document.getElementById('skinError').style.display = 'none';
-        document.getElementById('skinErrorText').style.display = 'none';
+        removeSkinBtn.style.display = 'none';
+        
+        // File input label zurücksetzen
+        const fileLabel = document.querySelector('.file-input-label');
+        fileLabel.textContent = '📁 Skin-Datei auswählen (64x64 PNG)';
     }
 });
 </script>
 </body>
-</html> 
+</html>
